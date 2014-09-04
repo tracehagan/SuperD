@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS duplicates;
 DROP TABLE IF EXISTS files;
 DROP TABLE IF EXISTS signatures;
+DROP TABLE IF EXISTS nonUnique;
 
 
 CREATE TABLE files
@@ -23,6 +24,16 @@ CREATE TABLE duplicates
 
 CREATE TABLE signatures
 (
- record_id BIGINT(19) PRIMARY KEY AUTO_INCREMENT,
+ record_id BIGINT(10) PRIMARY KEY AUTO_INCREMENT,
  file_hash VARCHAR(128)
+);
+
+CREATE TABLE nonUnique
+(
+ record_id BIGINT(19) PRIMARY KEY AUTO_INCREMENT,
+ file_id BIGINT(19),
+ file_path VARCHAR(2000) UNIQUE,
+ file_hash VARCHAR(128),
+ file_size BIGINT(19),
+ FOREIGN KEY (file_id) REFERENCES files(record_id)
 );
