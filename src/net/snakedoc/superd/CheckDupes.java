@@ -47,6 +47,8 @@ public class CheckDupes {
 		String sqlInsertDupes = "INSERT INTO duplicates (dupe1_id, dupe2_id, file_hash) VALUES(? , ? , ?)";
 		String sqlCountBytes = "SELECT SUM(files.file_size) FROM files JOIN duplicates ON files.record_id = duplicates.dupe1_id;";
         String sqlAlreadyChecked = "SELECT COUNT(*) FROM duplicates WHERE file_hash = ?";
+        String sqlSelectDuplicateHashes = "INSERT INTO nonUnique (file_path, file_hash, file_size) SELECT  file_path, file_hash, file_size FROM files WHERE file_hash IN (SELECT file_hash FROM files GROUP BY file_hash HAVING COUNT(*) > 1)";
+        String sqlSelectUnique = "INSERT INTO signatures (file_hash) SELECT DISTINCT file_hash FROM nonUnique";
 		
 		// Prepared Statements (NULL)
 		PreparedStatement psCount = null;
@@ -56,6 +58,8 @@ public class CheckDupes {
 		PreparedStatement psInsertDupes = null;
 		PreparedStatement psCountBytes = null;
         PreparedStatement psAlreadyChecked = null;
+        PreparedStatement psSelectDuplicateHashes = null;
+        PreparedStatement psSelectUnique = null;
 		
 		// Result Sets (NULL)
 		ResultSet rsCount = null;
@@ -64,6 +68,8 @@ public class CheckDupes {
 		ResultSet rsGetRecordId = null;
 		ResultSet rsCountBytes = null;
         ResultSet rsAlreadyChecked = null;
+        ResultSet rsSelectDuplicateHashes = null;
+
 		
 		// Object to hold duplicate data
 		DeDupeObj[] deDupeObj = null;
@@ -101,9 +107,27 @@ public class CheckDupes {
 			psInsertDupes = db.getConnection().prepareStatement(sqlInsertDupes);
 			psCountBytes = db.getConnection().prepareStatement(sqlCountBytes);
             psAlreadyChecked = db.getConnection().prepareStatement(sqlAlreadyChecked);
+            psSelectDuplicateHashes = db.getConnection().prepareStatement(sqlSelectDuplicateHashes);
+            psSelectUnique = db.getConnection().prepareStatement(sqlSelectUnique);
 		} catch (SQLException e) {
 			log.error("Error setting database statements!", e);
 		}
+        try
+        {   psSelectDuplicateHashes.execute();
+            psSelectDuplicateHashes.close();
+
+        } catch (SQLException e) {
+            log.error("unable to insert duplicate hash rows!", e);
+        }
+
+        try
+        {
+            psSelectUnique.execute();
+            psSelectUnique.close();
+        } catch (SQLException e){
+            log.error("unable to get unique hashes!", e);
+        }
+        /*
 		try {
 			rsCount = psCount.executeQuery();
 			rsCount.next();
@@ -214,7 +238,7 @@ public class CheckDupes {
 		} else {
 		    log.info(String.format("This accounts for about %.2f MB of wasted storage!", 
 		                    ((double)bytes / (double)1048576))); // divide by number of bytes in 1 MB
-		}
+		}*/
 		
 		try {
             db.closeConnection();

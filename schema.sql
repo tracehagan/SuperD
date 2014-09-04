@@ -31,9 +31,7 @@ CREATE TABLE signatures
 CREATE TABLE nonUnique
 (
  record_id BIGINT(19) PRIMARY KEY AUTO_INCREMENT,
- file_id BIGINT(19),
  file_path VARCHAR(2000) UNIQUE,
  file_hash VARCHAR(128),
- file_size BIGINT(19),
- FOREIGN KEY (file_id) REFERENCES files(record_id)
+ file_size BIGINT(19)
 );
