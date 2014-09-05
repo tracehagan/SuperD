@@ -39,19 +39,31 @@ public class Main {
             String sqlHashes = "SELECT file_hash FROM signatures;";
             String sqlDuplicates = "SELECT file_path FROM nonUnique WHERE file_hash = ?";
             String sqlHashCount = "SELECT count(*) FROM signatures;";
+            String sqlFileCount = "SELECT count(*) FROM files;";
+            String sqlNonUniqueCount = "SELECT count(*) FROM nonUnique;";
+            String sqlSignaturesCount = "SELECT count(*) FROM signatures;";
 
             PreparedStatement psHashCount = null;
             PreparedStatement psHashes = null;
             PreparedStatement psDuplicates = null;
+            PreparedStatement psFileCount = null;
+            PreparedStatement psNonUniqueCount = null;
+            PreparedStatement psSignaturesCount = null;
 
             ResultSet rsHashes = null;
             ResultSet rsHashCount = null;
             ResultSet rsDuplicates = null;
+            ResultSet rsFileCount = null;
+            ResultSet rsNonUniqueCount = null;
+            ResultSet rsSignaturesCount = null;
 
             try {
                 psHashes = db.getConnection().prepareStatement(sqlHashes);
                 psDuplicates = db.getConnection().prepareStatement(sqlDuplicates);
                 psHashCount = db.getConnection().prepareStatement(sqlHashCount);
+                psFileCount = db.getConnection().prepareStatement(sqlFileCount);
+                psNonUniqueCount = db.getConnection().prepareStatement(sqlNonUniqueCount);
+                psSignaturesCount = db.getConnection().prepareStatement(sqlSignaturesCount);
 
             } catch (Exception e){
                 e.printStackTrace();
@@ -61,6 +73,18 @@ public class Main {
                 rsHashCount = psHashCount.executeQuery();
                 rsHashCount.next();
                 numSig = rsHashCount.getInt(1);
+
+                rsFileCount = psFileCount.executeQuery();
+                rsFileCount.next();
+                log.debug("Num rows in files table: " + rsFileCount.getInt(1));
+
+                rsNonUniqueCount = psNonUniqueCount.executeQuery();
+                rsNonUniqueCount.next();
+                log.debug("Num rows in nonUnique table: " + rsNonUniqueCount.getInt(1));
+
+                rsSignaturesCount = psSignaturesCount.executeQuery();
+                rsSignaturesCount.next();
+                log.debug("Num rows in Signatures table: " + rsSignaturesCount.getInt(1));
 
                 rsHashes = psHashes.executeQuery();
                 log.debug("executed query");
