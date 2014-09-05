@@ -48,7 +48,7 @@ public class CheckDupes {
 		String sqlCountBytes = "SELECT SUM(files.file_size) FROM files JOIN duplicates ON files.record_id = duplicates.dupe1_id;";
         String sqlAlreadyChecked = "SELECT COUNT(*) FROM duplicates WHERE file_hash = ?";
         String sqlSelectDuplicateHashes = "INSERT INTO nonUnique (file_path, file_hash, file_size) SELECT  file_path, file_hash, file_size FROM files WHERE file_hash IN (SELECT file_hash FROM files GROUP BY file_hash HAVING COUNT(*) > 1)";
-        String sqlSelectUnique = "INSERT INTO signatures (file_hash) SELECT DISTINCT file_hash FROM nonUnique";
+        String sqlSelectUnique = "INSERT INTO signatures (file_hash, file_size) SELECT DISTINCT file_hash, file_size FROM nonUnique";
 		
 		// Prepared Statements (NULL)
 		PreparedStatement psCount = null;

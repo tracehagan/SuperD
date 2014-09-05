@@ -25,7 +25,8 @@ CREATE TABLE duplicates
 CREATE TABLE signatures
 (
  record_id BIGINT(10) PRIMARY KEY AUTO_INCREMENT,
- file_hash VARCHAR(128)
+ file_hash VARCHAR(128),
+ file_size BIGINT(19)
 );
 
 CREATE TABLE nonUnique

@@ -36,7 +36,7 @@ public class Main {
             } catch (ClassNotFoundException | SQLException e) {
                 log.fatal("Failed to open database connection! Check config file!", e);
             }
-            String sqlHashes = "SELECT file_hash FROM signatures;";
+            String sqlHashes = "SELECT file_hash, file_size FROM signatures ORDER BY file_size DESC;";
             String sqlDuplicates = "SELECT file_path FROM nonUnique WHERE file_hash = ?";
             String sqlHashCount = "SELECT count(*) FROM signatures;";
             String sqlFileCount = "SELECT count(*) FROM files;";
@@ -97,6 +97,7 @@ public class Main {
                     psDuplicates.setString(1, rsHashes.getString(1));
                     rsDuplicates = psDuplicates.executeQuery();
                     rsDuplicates.next();
+                    writer.write(/*rsHashes.getString("file_hash") + "|~|~|" + */rsHashes.getInt("file_size") + "|~|~|");
                     writer.write(rsDuplicates.getString("file_path"));
                     while (rsDuplicates != null && rsDuplicates.next()){
                         writer.write("|~|~|" + rsDuplicates.getString("file_path"));
