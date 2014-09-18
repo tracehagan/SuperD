@@ -16,17 +16,19 @@
 
 package net.snakedoc.superd;
 
+import net.snakedoc.jutils.Config;
+import net.snakedoc.jutils.ConfigException;
+import net.snakedoc.jutils.database.H2;
+import net.snakedoc.jutils.timer.MilliTimer;
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
-
-import org.apache.log4j.Logger;
-
-import net.snakedoc.jutils.Config;
-import net.snakedoc.jutils.ConfigException;
-import net.snakedoc.jutils.timer.MilliTimer;
-import net.snakedoc.jutils.database.H2;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 public class DedupeR {
 

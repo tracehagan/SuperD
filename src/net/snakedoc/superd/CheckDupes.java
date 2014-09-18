@@ -16,15 +16,13 @@
 
 package net.snakedoc.superd;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.apache.log4j.Logger;
-
 import net.snakedoc.jutils.Config;
 import net.snakedoc.jutils.ConfigException;
 import net.snakedoc.jutils.database.H2;
+import org.apache.log4j.Logger;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class CheckDupes {
     private static final Logger log = Logger.getLogger(CheckDupes.class);
