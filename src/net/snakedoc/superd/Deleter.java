@@ -43,6 +43,7 @@ public class Deleter {
                 }
                 //delete files
                 //TODO add deletion of deleted files from jList for public release; might need to switch to ArrayList or other data model
+                //TODO SWITCH TO jTABLE AND USE TABLE DATA MODEL
                 for (int j = 0; j < filesSelected.length ; j++){
                     System.out.println(filesSelected[j].toString());
                     /*TODO UNCOMMENT THIS AFTER VERIFIED WORKING
