@@ -23,6 +23,9 @@ import org.apache.log4j.Logger;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.io.File;
+
 
 public class CheckDupes {
     private static final Logger log = Logger.getLogger(CheckDupes.class);
@@ -84,6 +87,43 @@ public class CheckDupes {
         } catch (SQLException e){
             log.error("unable to get unique hashes!", e);
         }
+        /*
+        //ADDING SOMETHING TO TEST DELETER.java
+        String sqlSelectAll = "SELECT * FROM nonUnique ORDER BY file_hash ASC;";
+        String sqlCount = "SELECT COUNT(*) FROM nonUnique;";
+        PreparedStatement psSelectAll = null;
+        PreparedStatement psCount = null;
+        ResultSet rsCount = null;
+        ResultSet rsSelectAll = null;
+        int count = 0;
+
+        try{
+            psSelectAll = db.getConnection().prepareStatement(sqlSelectAll);
+            psCount = db.getConnection().prepareStatement(sqlCount);
+        } catch (SQLException e){
+            log.fatal("unable to prepare statement");
+        }
+
+        try{
+            rsSelectAll = psSelectAll.executeQuery();
+            rsCount = psCount.executeQuery();
+            rsCount.next();
+            count = rsCount.getInt(1);
+        } catch (SQLException e){
+            log.fatal("unable to execute query");
+        }
+        File[] dupes = new File[count];
+        try{
+            int i = 0;
+            while(rsSelectAll.next() && rsSelectAll != null && i < count){
+                dupes[i] = new File(rsSelectAll.getString("file_path"));
+                i++;
+            }
+        } catch (SQLException e){
+            log.fatal("Unable to build duplicates list");
+        }
+
+        Deleter.buildGUI(dupes); */
 		
 		try {
             db.closeConnection();
