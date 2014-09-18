@@ -97,7 +97,7 @@ public class Main {
                     psDuplicates.setString(1, rsHashes.getString(1));
                     rsDuplicates = psDuplicates.executeQuery();
                     rsDuplicates.next();
-                    writer.write(/*rsHashes.getString("file_hash") + "|~|~|" + */rsHashes.getInt("file_size") + "|~|~|");
+                    writer.write(/*rsHashes.getString("file_hash") + "|~|~|" + */rsHashes.getLong("file_size") + "|~|~|");
                     writer.write(rsDuplicates.getString("file_path"));
                     while (rsDuplicates != null && rsDuplicates.next()){
                         writer.write("|~|~|" + rsDuplicates.getString("file_path"));
