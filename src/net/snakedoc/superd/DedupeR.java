@@ -59,10 +59,12 @@ public class DedupeR {
 
         //CREATE DATABASE
         H2 db = null;
-        try {   // TODO get rid of this try/catch -- it covers the entire method 
-                // and swallows everything that does not catch. not good...
+        //fixed large try/catch with individual try/catches
+        try {
             db = Database.getInstance();
-            
+        } catch (Exception e) {
+            log.fatal("failed to get DB instance");
+        }
             //Create CHECKDUPES OBJ
 
             CheckDupes check = new CheckDupes();
@@ -77,7 +79,12 @@ public class DedupeR {
             //LOAD DATABASE TABLES
             Schema s = new Schema();
             String sqlSchema = s.getSchema();
-            PreparedStatement psSchema = db.getConnection().prepareStatement(sqlSchema);
+            PreparedStatement psSchema = null;
+            try{
+                psSchema = db.getConnection().prepareStatement(sqlSchema);
+            } catch (SQLException e){
+                log.fatal("failed to prepare statement");
+            }
             try {
                 log.info("Running schema update on db: " + db.getDbPath());
                 psSchema.execute();
@@ -110,9 +117,7 @@ public class DedupeR {
             // ALL DONE! stop timer
             timer.stopTimer();
             log.info("Total Runtime: " + timer.getTime());
-        } catch (Exception e) { // TODO get rid of this to narrow try/catch scope for improved exception handling/recovery. log out
-            e.printStackTrace();
-        }
+
 	}
 	
 	
