@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Arrays;
 
 public class Deleter {
 
@@ -43,17 +44,17 @@ public class Deleter {
             public void actionPerformed(ActionEvent e){
                 //get selected files marked for deletion
                 int[] listIndicies = filesTable.getSelectedRows();
+                Arrays.sort(listIndicies);
                 //build file array of selected files
                 File[] filesSelected = new File[listIndicies.length];
                 for (int i = 0; i < listIndicies.length; i++){
-                    filesSelected[i]= new File(duplicates[listIndicies[i]][0].toString());
-                    model.removeRow(listIndicies[i]);
+                    filesSelected[i]= new File(model.getValueAt(filesTable.convertRowIndexToModel(listIndicies[i]),0).toString());
                 }
                 //delete files
 
                 for (int j = 0; j < filesSelected.length ; j++){
                     System.out.println(filesSelected[j].toString());
-
+                    model.removeRow(filesTable.convertRowIndexToModel(listIndicies[j]-j));
                     /*TODO UNCOMMENT THIS AFTER VERIFIED WORKING
                     filesSelected[j].delete();
                     */
@@ -65,7 +66,7 @@ public class Deleter {
         //build panel for GUI components
         JPanel panel = new JPanel();
         //set list to allow multiple selection
-        filesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        filesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane scrollPane = new JScrollPane(filesTable);
         filesTable.setFillsViewportHeight(true);
         //add a scrollable jlist to panel
