@@ -87,7 +87,7 @@ public class CheckDupes {
         } catch (SQLException e){
             log.error("unable to get unique hashes!", e);
         }
-        /*
+
         //ADDING SOMETHING TO TEST DELETER.java
         String sqlSelectAll = "SELECT * FROM nonUnique ORDER BY file_hash ASC;";
         String sqlCount = "SELECT COUNT(*) FROM nonUnique;";
@@ -112,18 +112,19 @@ public class CheckDupes {
         } catch (SQLException e){
             log.fatal("unable to execute query");
         }
-        File[] dupes = new File[count];
+        Object[][] dupes = new Object[count][2];
         try{
             int i = 0;
             while(rsSelectAll.next() && rsSelectAll != null && i < count){
-                dupes[i] = new File(rsSelectAll.getString("file_path"));
+                dupes[i][0] = new File(rsSelectAll.getString("file_path"));
+                dupes[i][1] = new String(rsSelectAll.getString("file_hash"));
                 i++;
             }
         } catch (SQLException e){
             log.fatal("Unable to build duplicates list");
         }
 
-        Deleter.buildGUI(dupes); */
+        Deleter.buildGUI(dupes);
 		
 		try {
             db.closeConnection();

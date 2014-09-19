@@ -17,35 +17,43 @@
 package net.snakedoc.superd;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 public class Deleter {
 
-    public static void buildGUI(final File[] duplicates){
+    public static void buildGUI(final Object[][] duplicates){
+        final String[] columnNames = {"File Path", "File Hash"};
         //build button
         JButton jb = new JButton("Delete Selected Files");
         //build list box for duplicates
-        final JList files = new JList(duplicates);
-        //set width of list box
-        files.setFixedCellWidth(450);
+        final DefaultTableModel model = new DefaultTableModel(duplicates, columnNames){
+
+            public boolean isCellEditable(int rowIndex, int mColIndex) {
+                return false;
+            }
+        };
+        final JTable filesTable = new JTable(model);
         //add action listener that handles deletion to jbutton jb
         jb.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
                 //get selected files marked for deletion
-                int[] listIndicies = files.getSelectedIndices();
+                int[] listIndicies = filesTable.getSelectedRows();
                 //build file array of selected files
                 File[] filesSelected = new File[listIndicies.length];
                 for (int i = 0; i < listIndicies.length; i++){
-                    filesSelected[i]= duplicates[listIndicies[i]];
+                    filesSelected[i]= new File(duplicates[listIndicies[i]][0].toString());
                 }
                 //delete files
                 //TODO add deletion of deleted files from jList for public release; might need to switch to ArrayList or other data model
                 //TODO SWITCH TO jTABLE AND USE TABLE DATA MODEL
                 for (int j = 0; j < filesSelected.length ; j++){
                     System.out.println(filesSelected[j].toString());
+                    model.removeRow(listIndicies[j]);
                     /*TODO UNCOMMENT THIS AFTER VERIFIED WORKING
                     filesSelected[j].delete();
                     */
@@ -57,9 +65,11 @@ public class Deleter {
         //build panel for GUI components
         JPanel panel = new JPanel();
         //set list to allow multiple selection
-        files.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        filesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(filesTable);
+        filesTable.setFillsViewportHeight(true);
         //add a scrollable jlist to panel
-        panel.add(new JScrollPane(files));
+        panel.add(scrollPane);
         //add the button
         panel.add(jb);
         //set panel visible
