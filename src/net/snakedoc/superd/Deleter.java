@@ -47,13 +47,13 @@ public class Deleter {
                 File[] filesSelected = new File[listIndicies.length];
                 for (int i = 0; i < listIndicies.length; i++){
                     filesSelected[i]= new File(duplicates[listIndicies[i]][0].toString());
+                    model.removeRow(listIndicies[i]);
                 }
                 //delete files
-                //TODO add deletion of deleted files from jList for public release; might need to switch to ArrayList or other data model
-                //TODO SWITCH TO jTABLE AND USE TABLE DATA MODEL
+
                 for (int j = 0; j < filesSelected.length ; j++){
                     System.out.println(filesSelected[j].toString());
-                    model.removeRow(listIndicies[j]);
+
                     /*TODO UNCOMMENT THIS AFTER VERIFIED WORKING
                     filesSelected[j].delete();
                     */
@@ -65,7 +65,7 @@ public class Deleter {
         //build panel for GUI components
         JPanel panel = new JPanel();
         //set list to allow multiple selection
-        filesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        filesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(filesTable);
         filesTable.setFillsViewportHeight(true);
         //add a scrollable jlist to panel
