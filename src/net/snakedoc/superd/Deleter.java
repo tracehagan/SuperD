@@ -16,16 +16,19 @@
 
 package net.snakedoc.superd;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import org.apache.log4j.Logger;
 
+import javax.swing.*;
+import javax.swing.table.*;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 
 public class Deleter {
-
+    private static final Logger log = Logger.getLogger(Deleter.class);
     public static void buildGUI(final Object[][] duplicates){
         final String[] columnNames = {"File Path", "File Hash"};
         //build button
@@ -37,7 +40,31 @@ public class Deleter {
                 return false;
             }
         };
-        final JTable filesTable = new JTable(model);
+        final JTable filesTable = new JTable(model)
+        {
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column){
+                Component c = super.prepareRenderer(renderer, row, column);
+                boolean color = false;
+                //custom renderering here
+
+                if(row<1){
+                    c.setBackground(Color.LIGHT_GRAY);
+                } else {
+                    Object selectedValue = model.getValueAt(row, 1);
+                    if (!selectedValue.equals(model.getValueAt(row-1,1))){
+                        color=!color;
+                    }
+                    if(!isRowSelected(row)){
+                        if(color){
+                            c.setBackground(Color.LIGHT_GRAY);
+                        }else{
+                            c.setBackground(Color.WHITE);
+                        }
+                    }
+                }
+                return c;
+            }
+        };
         //add action listener that handles deletion to jbutton jb
         jb.addActionListener(new ActionListener(){
             @Override
