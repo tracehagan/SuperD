@@ -42,27 +42,36 @@ public class Deleter {
         };
         final JTable filesTable = new JTable(model)
         {
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int column){
+            //CODE FROM ANSWER ON STACKOVERFLOW http://stackoverflow.com/questions/7132400/jtable-row-hightlighter-based-on-value-from-tablecell
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component c = super.prepareRenderer(renderer, row, column);
-                boolean color = false;
-                //custom renderering here
+                JComponent jc = (JComponent) c;
+                if (!isRowSelected(row))
+                {
+                    c.setBackground(getRowBackground(row));
+                }
 
-                if(row<1){
-                    c.setBackground(Color.LIGHT_GRAY);
-                } else {
-                    Object selectedValue = model.getValueAt(row, 1);
-                    if (!selectedValue.equals(model.getValueAt(row-1,1))){
-                        color=!color;
-                    }
-                    if(!isRowSelected(row)){
-                        if(color){
-                            c.setBackground(Color.LIGHT_GRAY);
-                        }else{
-                            c.setBackground(Color.WHITE);
-                        }
+                return c;
+            }
+
+            private Color getRowBackground(int row)
+            {
+                boolean isDark = true;
+
+                Object previous = getValueAt(0, 1);
+
+                for (int i = 1; i <= row; i++)
+                {
+                    Object current = getValueAt(i, 1);
+
+                    if (! current.equals(previous))
+                    {
+                        isDark = !isDark;
+                        previous = current;
                     }
                 }
-                return c;
+
+                return isDark ? Color.WHITE : Color.LIGHT_GRAY;
             }
         };
         //add action listener that handles deletion to jbutton jb
