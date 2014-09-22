@@ -87,9 +87,29 @@ public class CheckDupes {
         } catch (SQLException e){
             log.error("unable to get unique hashes!", e);
         }
+        buildDeleterGUI();
 
-        //ADDING SOMETHING TO TEST DELETER.java
-        String sqlSelectAll = "SELECT * FROM nonUnique ORDER BY file_hash ASC;";
+	}
+
+    public void buildDeleterGUI(){
+        //DB object
+        H2 db = null;
+        try {
+            db = Database.getInstance();
+        } catch (ConfigException e2) {
+            log.error("Failed to read config file!", e2);
+        }
+        try {
+            db.openConnection();
+        } catch (ClassNotFoundException e1) {
+            // means driver for database is not found
+            log.fatal("Failed to read the database!", e1);
+        } catch (SQLException e1) {
+            log.fatal("Failed to open database!", e1);
+        }
+
+        //find duplicates
+        String sqlSelectAll = "SELECT * FROM nonUnique ORDER BY file_size DESC, file_hash ASC;";
         String sqlCount = "SELECT COUNT(*) FROM nonUnique;";
         PreparedStatement psSelectAll = null;
         PreparedStatement psCount = null;
@@ -125,11 +145,11 @@ public class CheckDupes {
         }
 
         Deleter.buildGUI(dupes);
-		
-		try {
+
+        try {
             db.closeConnection();
         } catch (SQLException e) {
             log.warn("Failed to close resource!", e);
         }
-	}
+    }
 }

@@ -57,67 +57,58 @@ public class DedupeR {
         log.info("\n\n");
         log.info("Starting program!");
 
-        //CREATE DATABASE
-        H2 db = null;
-        //fixed large try/catch with individual try/catches
-        try {
-            db = Database.getInstance();
-        } catch (Exception e) {
-            log.fatal("failed to get DB instance");
-        }
-            //Create CHECKDUPES OBJ
+        //Create CHECKDUPES OBJ
 
-            CheckDupes check = new CheckDupes();
+        CheckDupes check = new CheckDupes();
 
-            //CONNECT TO DATABASE
-            try {
-                db.openConnection();
-            } catch (ClassNotFoundException | SQLException e) {
-                log.fatal("Failed to open database connection! Check config file!", e);
-            }
-
-            //LOAD DATABASE TABLES
-            Schema s = new Schema();
-            String sqlSchema = s.getSchema();
-            PreparedStatement psSchema = null;
-            try{
-                psSchema = db.getConnection().prepareStatement(sqlSchema);
-            } catch (SQLException e){
-                log.fatal("failed to prepare statement");
-            }
-            try {
-                log.info("Running schema update on db: " + db.getDbPath());
-                psSchema.execute();
-                log.info("Schema update complete!");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                db.closeConnection();
-            } catch (SQLException e) {
-                log.warn("Failed to close database connection!", e);
-            }
+        //TODO ask for what to do, ie run program on fresh DB, clear DB, or run CheckDupes without any hashing on pre-existing DB
+        int selection = 0;
             if (args.length<1){
                 Scanner in = new Scanner(System.in);
-                System.out.println("Would you like to read from prop file or enter options now?");
-                System.out.print("Enter 1 to enter configuration now, 2 to use existing prop file: ");
-                int choice=2;
-                choice = Integer.parseInt(in.next());
-                if (choice == 1){
-                    readSetup();
-                }
+                do{
+                    selection = readMenu();
+                    switch (selection){
+                        case 1:
+                            runSchemaUpdate();
+                            System.out.println("Would you like to read from prop file or enter options now?");
+                            System.out.print("Enter 1 to enter configuration now, 2 to use existing prop file: ");
+                            int choice=2;
+                            choice = Integer.parseInt(in.next());
+                            if (choice == 1){
+                                readSetup();
+                            }
+                            break;
+                        case 2:
+                            check.buildDeleterGUI();
+                            break;
+                        case 3:
+                            System.out.println("!!!!!!WARNING: DO NOT INCLUDE DIRECTORIES ALREADY SCANNED AND ENTERED INTO DB!!!!!!");
+                            System.out.println("Would you like to read from prop file or enter options now?");
+                            System.out.print("Enter 1 to enter configuration now, 2 to use existing prop file: ");
+                            choice=2;
+                            choice = Integer.parseInt(in.next());
+                            if (choice == 1){
+                                readSetup();
+                            }
+                            break;
+                    }
+                    if (selection!=1 || selection !=2 || selection !=3){
+                        System.out.println("\n\n!!!!Error! Please make a valid selection!!!!\n\n");
+                    }
+                }while(selection!=1 || selection !=2 || selection !=3);
+
             }
 
+            if (selection != 2){
+                //Run Setup() to do main logic, make calls to Walk()
+                setup();
 
-            //Run Setup() to do main logic, make calls to Walk()
-            setup();
-
-            //DATABASE now filled with all file hashes; time to look for duplicates
-            check.checkDupes();
-            // ALL DONE! stop timer
-            timer.stopTimer();
-            log.info("Total Runtime: " + timer.getTime());
-
+                //DATABASE now filled with all file hashes; time to look for duplicates
+                check.checkDupes();
+                // ALL DONE! stop timer
+                timer.stopTimer();
+                log.info("Total Runtime: " + timer.getTime());
+            }
 	}
 	
 	
@@ -189,6 +180,55 @@ public class DedupeR {
         System.out.print("Please enter: ");
         input = in.nextLine();
         config.setConfig("ROOT", input, false);
+    }
+
+    int readMenu(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Welcome to SuperD. What would you like to do today? \n\n 1. Run SuperD with a clean database (Normal) \n 2. Find duplicates in existing DB (Advanced) \n 3. Run SuperD with filled Database (Advanced)\n");
+        System.out.print("Please enter the number of your choice: ");
+        int input = 0;
+        input = in.nextInt();
+        return input;
+    }
+
+    void runSchemaUpdate(){
+        //CREATE DATABASE
+        H2 db = null;
+        //fixed large try/catch with individual try/catches
+        try {
+            db = Database.getInstance();
+        } catch (Exception e) {
+            log.fatal("failed to get DB instance");
+        }
+
+        //CONNECT TO DATABASE
+        try {
+            db.openConnection();
+        } catch (ClassNotFoundException | SQLException e) {
+            log.fatal("Failed to open database connection! Check config file!", e);
+        }
+
+        //LOAD DATABASE TABLES
+        Schema s = new Schema();
+        String sqlSchema = s.getSchema();
+        PreparedStatement psSchema = null;
+        try{
+            psSchema = db.getConnection().prepareStatement(sqlSchema);
+        } catch (SQLException e){
+            log.fatal("failed to prepare statement");
+        }
+        try {
+            log.info("Running schema update on db: " + db.getDbPath());
+            psSchema.execute();
+            log.info("Schema update complete!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            db.closeConnection();
+        } catch (SQLException e) {
+            log.warn("Failed to close database connection!", e);
+        }
     }
 
 }
