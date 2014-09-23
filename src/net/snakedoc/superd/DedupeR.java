@@ -61,7 +61,7 @@ public class DedupeR {
 
         CheckDupes check = new CheckDupes();
 
-        //TODO ask for what to do, ie run program on fresh DB, clear DB, or run CheckDupes without any hashing on pre-existing DB
+
         int selection = 0;
             if (args.length<1){
                 Scanner in = new Scanner(System.in);
@@ -92,10 +92,11 @@ public class DedupeR {
                             }
                             break;
                     }
-                    if (selection!=1 || selection !=2 || selection !=3){
+                    
+                    if ((selection!=1) && (selection !=2) && (selection !=3)){
                         System.out.println("\n\n!!!!Error! Please make a valid selection!!!!\n\n");
                     }
-                }while(selection!=1 || selection !=2 || selection !=3);
+                }while(selection!=1 && selection !=2 && selection !=3);
 
             }
 
@@ -151,8 +152,7 @@ public class DedupeR {
 
 
     /* Process command line arguments and store into properties file */
-    /* CONFIG class needs to be fixed.        */
-    /*  TODO config.setConfig overwrites entire file rather than just the specific key */
+
 
     public void readSetup(){
 
@@ -184,7 +184,7 @@ public class DedupeR {
 
     int readMenu(){
         Scanner in = new Scanner(System.in);
-        System.out.println("Welcome to SuperD. What would you like to do today? \n\n 1. Run SuperD with a clean database (Normal) \n 2. Find duplicates in existing DB (Advanced) \n 3. Run SuperD with filled Database (Advanced)\n");
+        System.out.println("Welcome to SuperD. What would you like to do today? \n\n 1. Run SuperD with a clean database (Typical) \n 2. Find duplicates in existing DB (Advanced) \n 3. Run SuperD with filled Database (Advanced)\n");
         System.out.print("Please enter the number of your choice: ");
         int input = 0;
         input = in.nextInt();

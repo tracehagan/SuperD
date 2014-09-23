@@ -109,8 +109,8 @@ public class CheckDupes {
         }
 
         //find duplicates
-        String sqlSelectAll = "SELECT * FROM nonUnique ORDER BY file_size DESC, file_hash ASC;";
-        String sqlCount = "SELECT COUNT(*) FROM nonUnique;";
+        String sqlSelectAll = "SELECT * FROM nonUnique WHERE file_size > 1024 ORDER BY file_size DESC, file_hash ASC;";
+        String sqlCount = "SELECT COUNT(*) FROM nonUnique WHERE file_size > 1024;";
         PreparedStatement psSelectAll = null;
         PreparedStatement psCount = null;
         ResultSet rsCount = null;
