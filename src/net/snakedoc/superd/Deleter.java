@@ -16,35 +16,81 @@
 
 package net.snakedoc.superd;
 
+import org.apache.log4j.Logger;
+
 import javax.swing.*;
+import javax.swing.table.*;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Arrays;
 
 public class Deleter {
-
-    public static void buildGUI(final File[] duplicates){
+    private static final Logger log = Logger.getLogger(Deleter.class);
+    public static void buildGUI(final Object[][] duplicates){
+        final String[] columnNames = {"File Path", "File Hash"};
         //build button
         JButton jb = new JButton("Delete Selected Files");
         //build list box for duplicates
-        final JList files = new JList(duplicates);
-        //set width of list box
-        files.setFixedCellWidth(450);
+        final DefaultTableModel model = new DefaultTableModel(duplicates, columnNames){
+
+            public boolean isCellEditable(int rowIndex, int mColIndex) {
+                return false;
+            }
+        };
+        final JTable filesTable = new JTable(model)
+        {
+            //CODE FROM ANSWER ON STACKOVERFLOW http://stackoverflow.com/questions/7132400/jtable-row-hightlighter-based-on-value-from-tablecell
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+                JComponent jc = (JComponent) c;
+                if (!isRowSelected(row))
+                {
+                    c.setBackground(getRowBackground(row));
+                }
+
+                return c;
+            }
+
+            private Color getRowBackground(int row)
+            {
+                boolean isDark = true;
+
+                Object previous = getValueAt(0, 1);
+
+                for (int i = 1; i <= row; i++)
+                {
+                    Object current = getValueAt(i, 1);
+
+                    if (! current.equals(previous))
+                    {
+                        isDark = !isDark;
+                        previous = current;
+                    }
+                }
+
+                return isDark ? Color.WHITE : Color.LIGHT_GRAY;
+            }
+        };
         //add action listener that handles deletion to jbutton jb
         jb.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
                 //get selected files marked for deletion
-                int[] listIndicies = files.getSelectedIndices();
+                int[] listIndicies = filesTable.getSelectedRows();
+                Arrays.sort(listIndicies);
                 //build file array of selected files
                 File[] filesSelected = new File[listIndicies.length];
                 for (int i = 0; i < listIndicies.length; i++){
-                    filesSelected[i]= duplicates[listIndicies[i]];
+                    filesSelected[i]= new File(model.getValueAt(filesTable.convertRowIndexToModel(listIndicies[i]),0).toString());
                 }
                 //delete files
-                //TODO add deletion of deleted files from jList for public release; might need to switch to ArrayList or other data model
+
                 for (int j = 0; j < filesSelected.length ; j++){
                     System.out.println(filesSelected[j].toString());
+                    model.removeRow(filesTable.convertRowIndexToModel(listIndicies[j]-j));
                     /*TODO UNCOMMENT THIS AFTER VERIFIED WORKING
                     filesSelected[j].delete();
                     */
@@ -56,9 +102,11 @@ public class Deleter {
         //build panel for GUI components
         JPanel panel = new JPanel();
         //set list to allow multiple selection
-        files.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        filesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(filesTable);
+        filesTable.setFillsViewportHeight(true);
         //add a scrollable jlist to panel
-        panel.add(new JScrollPane(files));
+        panel.add(scrollPane);
         //add the button
         panel.add(jb);
         //set panel visible
